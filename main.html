@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character spreadsheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .nav-logo h2 {
+            color: #2c3e50;
+            font-size: 24px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: #3498db;
+        }
+
+        /* Hero Section */
+        .hero {
+            margin-top: 70px;
+            min-height: 80vh;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .hero-content {
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .hero-content h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            background: #fff;
+            color: #667eea;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .profile-picture-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .placeholder-img {
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: 3px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .placeholder-img:hover {
+            transform: scale(1.05);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        /* URL Input Section */
+        .image-url-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+            min-width: 300px;
+        }
+
+        .image-url-section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: white;
+        }
+
+        .url-input-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .url-input {
+            padding: 12px 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .url-input:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .url-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .url-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .update-btn, .clear-btn {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .update-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .update-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .clear-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .clear-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .image-preview {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .preview-img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.3);
+            display: none;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .success-message {
+            color: #51cf66;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* About Section */
+        .about {
+            padding: 100px 0;
+            background: #f8f9fa;
+        }
+
+        .about h2 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 60px;
+            color: #2c3e50;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-text p {
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .skills h3 {
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        .skill-item {
+            margin-bottom: 20px;
+        }
+
+        .skill-item span {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .skill-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+            border-radius: 5px;
+            width: 0;
+            animation: fillSkill 2s ease-in-out forwards;
+        }
+
+        .skill-progress[data-width="95%"] { animation-delay: 0.2s; }
+        .skill-progress[data-width="85%"] { animation-delay: 0.4s; }
+        .skill-progress[data-width="80%"] { animation-delay: 0.6s; }
+
+        @keyframes fillSkill {
+            to { width: var(--width, 0%); }
+        }
+
+        .skill-progress[data-width="90%"] { --width: 95%; }
+        .skill-progress[data-width="85%"] { --width: 50%; }
+        .skill-progress[data-width="80%"] { --width: 62%; }
+
+        /* Footer */
+        .footer {
+            background: #1a252f;
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 40px 20px;
+            }
+            
+            .hero-content h1 {
+                font-size: 36px;
+            }
+            
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-container {
+                flex-direction: column;
+                height: auto;
+                padding: 20px;
+            }
+            
+            .hero {
+                margin-top: 120px;
+            }
+
+            .placeholder-img {
+                width: 250px;
+                height: 250px;
+            }
+
+            .image-url-section {
+                min-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Cursed Fighters: Dimensional Clash Wiki</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">Stats</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Joshura the Voidwalker</h1>
+            <p>Joshura comes from an off the map island located near the Dominican Republic, where he trained all his life to master his Cursed Energy. Now he kills monsters using his Cursed Technique: Void Manipulation.</p>
+            <button class="cta-button">Go to Game</button>
+        </div>
+        <div class="hero-image">
+            <div class="profile-picture-container">
+                <div class="placeholder-img" id="profilePicture"></div>
+                <div class="image-url-section">
+                    <h3>📸 Update Profile Picture</h3>
+                    <div class="url-input-container">
+                        <input 
+                            type="url" 
+                            class="url-input" 
+                            id="imageUrlInput" 
+                            placeholder="Enter image URL (e.g., https://example.com/image.jpg)"
+                        >
+                        <div class="url-buttons">
+                            <button class="update-btn" onclick="updateProfilePicture()">Update</button>
+                            <button class="clear-btn" onclick="clearProfilePicture()">Clear</button>
+                        </div>
+                        <div class="image-preview">
+                            <img class="preview-img" id="previewImg" alt="Preview">
+                        </div>
+                        <div class="error-message" id="errorMessage"></div>
+                        <div class="success-message" id="successMessage"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section id="about" class="about">
+        <div class="container">
+            <h2>Abilities</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p><b>Cursed Technique: Void Manipulation---</b>Joshura the Voidwalker possesses the rare ability to manipulate the fundamental nothingness that exists between all things. His technique allows him to create pockets of absolute void that erase matter and energy, phase through reality using Void Steps for instant teleportation, and drain cursed energy from enemy techniques by redirecting them into the emptiness. His Hollow Strikes bypass all physical defenses by creating temporary tears in reality itself. Through years of mastery, Joshura has developed the advanced technique "Void Constellation" - the ability to scatter dozens of microscopic void points throughout a battlefield that can be instantly connected to form geometric patterns of erasure, allowing him to delete entire sections of reality in precise, star-like formations.</p>
+                  <p><b>Domain Expansion: "Infinite Hollow - The Space Between Stars"</b>---
+Joshura's Domain manifests as a vast cosmic graveyard where dying stars float in an endless dark expanse, gravity bends to his will, and absolute silence reigns except for an ominous cosmic hum. Within this space between realities, he commands gravitational forces to crush or suspend enemies, can detonate the domain's dying stars as devastating attacks, and every technique used leaves void echoes that repeat moments later. The domain's sure-hit effect, "Cosmic Erasure," gradually deletes opponents from existence starting with their cursed energy, then their memories, and finally their physical form - mimicking the slow heat death of the universe itself.</p>
+                </div>
+                <div class="skills">
+                    <h3>Stats</h3>
+                    <div class="skill-item">
+                        <span>Versatility</span>
+                        <div class="skill-bar"><div class="skill-progress" data-width="90%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span>Defense</span>
+                        <div class="skill-bar"><div class="skill-progress" data-width="85%"></div></div>
+                    </div>
+                    <div class="skill-item">
+                        <span>Speed</span>
+                        <div class="skill-bar"><div class="skill-progress" data-width="80%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; BigBoy Games INC. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function isValidImageUrl(url) {
+            try {
+                new URL(url);
+                return /\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?.*)?$/i.test(url) || 
+                       url.includes('imgur.com') || 
+                       url.includes('discord.com') ||
+                       url.includes('github.com') ||
+                       url.includes('unsplash.com') ||
+                       url.includes('pexels.com') ||
+                       url.includes('pixabay.com');
+            } catch {
+                return false;
+            }
+        }
+
+        function showMessage(type, message) {
+            const errorMsg = document.getElementById('errorMessage');
+            const successMsg = document.getElementById('successMessage');
+            
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            
+            if (type === 'error') {
+                errorMsg.textContent = message;
+                errorMsg.style.display = 'block';
+            } else {
+                successMsg.textContent = message;
+                successMsg.style.display = 'block';
+            }
+            
+            setTimeout(() => {
+                errorMsg.style.display = 'none';
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        function updateProfilePicture() {
+            const urlInput = document.getElementById('imageUrlInput');
+            const profilePicture = document.getElementById('profilePicture');
+            const previewImg = document.getElementById('previewImg');
+            const imageUrl = urlInput.value.trim();
+
+            if (!imageUrl) {
+                showMessage('error', 'Please enter an image URL');
+                return;
+            }
+
+            if (!isValidImageUrl(imageUrl)) {
+                showMessage('error', 'Please enter a valid image URL');
+                return;
+            }
+
+            // Test if image loads successfully
+            const testImg = new Image();
+            testImg.onload = function() {
+                profilePicture.style.backgroundImage = `url('${imageUrl}')`;
+                profilePicture.style.backgroundSize = 'cover';
+                profilePicture.style.backgroundPosition = 'center';
+                
+                previewImg.src = imageUrl;
+                previewImg.style.display = 'block';
+                
+                showMessage('success', 'Profile picture updated successfully!');
+                
+                // Save to local memory (not localStorage as it's not supported)
+                window.currentProfileImage = imageUrl;
+            };
+            
+            testImg.onerror = function() {
+                showMessage('error', 'Failed to load image. Please check the URL.');
+            };
+            
+            testImg.src = imageUrl;
+        }
+
+        function clearProfilePicture() {
+            const profilePicture = document.getElementById('profilePicture');
+            const urlInput = document.getElementById('imageUrlInput');
+            const previewImg = document.getElementById('previewImg');
+            
+            profilePicture.style.backgroundImage = '';
+            urlInput.value = '';
+            previewImg.style.display = 'none';
+            
+            window.currentProfileImage = null;
+            showMessage('success', 'Profile picture cleared');
+        }
+
+        // Allow Enter key to update picture
+        document.getElementById('imageUrlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                updateProfilePicture();
+            }
+        });
+
+        // Show preview while typing (with debounce)
+        let previewTimeout;
+        document.getElementById('imageUrlInput').addEventListener('input', function(e) {
+            const previewImg = document.getElementById('previewImg');
+            const url = e.target.value.trim();
+            
+            clearTimeout(previewTimeout);
+            
+            if (url && isValidImageUrl(url)) {
+                previewTimeout = setTimeout(() => {
+                    const testImg = new Image();
+                    testImg.onload = function() {
+                        previewImg.src = url;
+                        previewImg.style.display = 'block';
+                    };
+                    testImg.onerror = function() {
+                        previewImg.style.display = 'none';
+                    };
+                    testImg.src = url;
+                }, 500);
+            } else {
+                previewImg.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
